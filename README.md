@@ -1,98 +1,98 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+🏫 College Discovery Platform (Backend)
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+A scalable backend architecture built with NestJS + Prisma + PostgreSQL, designed around a fully relational college ecosystem with authentication, discovery, prediction, and discussion features. All APIs are tested using Postman and are ready for frontend integration.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+🧠 Architecture Overview (Core Design)
 
-## Description
+The system follows a modular, relational backend architecture where each feature is split into independent modules (College, User, Q&A, Review, Cutoff, Auth). Prisma acts as the central ORM managing strict relational consistency across entities with foreign keys and cascading rules.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+Key design principle:
+👉 “Everything revolves around College as the central entity, and all features (courses, placements, reviews, cutoffs, questions) are relational extensions of it.”
 
-## Project setup
+🔗 Database Relations (Most Important Part)
+🏫 College (Core Entity)
 
-```bash
-$ npm install
-```
+College is the central hub connected to:
 
-## Compile and run the project
+Courses (1 → Many)
+Placement (1 → 1)
+Reviews (1 → Many)
+Cutoffs (1 → Many)
+Questions (1 → Many)
+👤 User Relations
 
-```bash
-# development
-$ npm run start
+User is linked to all interaction layers:
 
-# watch mode
-$ npm run start:dev
+Questions (1 → Many)
+Answers (1 → Many)
+Reviews (1 → Many)
 
-# production mode
-$ npm run start:prod
-```
+👉 This enables full traceability of every user action across the platform.
 
-## Run tests
+💬 Q&A System (Discussion Layer)
+Question → belongs to User + College
+Answer → belongs to User + Question
+Supports nested population (question → answers → users)
 
-```bash
-# unit tests
-$ npm run test
+👉 This creates a structured forum-like discussion system tied directly to colleges.
 
-# e2e tests
-$ npm run test:e2e
+⭐ Reviews System
+Review → belongs to User + College
+Enables user-driven feedback system
+Supports aggregated college evaluation
+📊 Cutoff System (Predictor Engine)
+Cutoff → belongs to College
+Used for rank-based filtering
+Powers the college predictor system
 
-# test coverage
-$ npm run test:cov
-```
+👉 Enables rule-based admission prediction using exam + rank matching.
 
-## Deployment
+🔐 Authentication (2-Line Summary)
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+Implemented secure JWT-based authentication system with bcrypt password hashing, supporting user signup and login. Role-based access control (ADMIN/USER) ensures secure separation between administrative college management and user interactions.
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+⚙️ Core Backend Features
+🔍 Search, Filter, Sort, Pagination (Advanced Query System)
 
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
-```
+A fully optimized query system is implemented for college listing:
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+Search: Colleges by name, city, state
+Filtering: by fees range, rating, type (government/private)
+Sorting: by rating, fees, established year
+Pagination: large dataset handling with page/limit support
 
-## Resources
+👉 Implemented using dynamic Prisma query building for efficient database access.
 
-Check out a few resources that may come in handy when working with NestJS:
+📊 College Predictor System
+Input: exam type + rank
+Backend matches rank against cutoff table
+Returns eligible colleges dynamically
+Uses relational filtering between Cutoff and College tables
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
 
-## Support
+Role-based protected access
+🧪 Postman Testing Coverage
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+All modules were fully tested using Postman:
 
-## Stay in touch
+✔ Authentication flow (signup/login/JWT validation)
+✔ Role-based access (ADMIN vs USER restrictions)
+✔ College CRUD operations
+✔ Search/filter/sort/pagination queries
+✔ College detail aggregation API
+✔ Q&A flow (question → answer → nested retrieval)
+✔ Review system (create + fetch)
+✔ Cutoff-based predictor logic
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+🐳 Docker Setup
 
-## License
+The project includes Docker support for easy deployment and environment consistency
+🔥 Outcome
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+This backend behaves like a real-world production system with:
+
+scalable relational design
+modular architecture
+secure authentication
+optimized querying system
+frontend-ready API
