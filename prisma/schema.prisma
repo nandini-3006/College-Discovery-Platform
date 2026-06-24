@@ -1,0 +1,122 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model College {
+  id              Int     @id @default(autoincrement())
+  name            String
+  location        String
+  city            String
+  state           String
+  type            String
+  establishedYear Int
+  fees            Float
+  rating          Float
+  overview        String
+  website         String?
+  imageUrl        String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  courses   Course[]
+  reviews   Review[]
+  placement Placement?
+  cutoffs   Cutoff[]   @relation("CollegeCutoffs")
+  questions Question[]
+}
+
+model Course {
+  id       Int    @id @default(autoincrement())
+  name     String
+  duration String
+  fees     Float
+
+  collegeId Int
+  college   College @relation(fields: [collegeId], references: [id], onDelete: Cascade)
+}
+
+model Placement {
+  id               Int   @id @default(autoincrement())
+  highestPackage   Float
+  averagePackage   Float
+  placementPercent Float
+
+  collegeId Int     @unique
+  college   College @relation(fields: [collegeId], references: [id], onDelete: Cascade)
+}
+
+model Review {
+  id          Int    @id @default(autoincrement())
+  studentName String
+  rating      Float
+  comment     String
+
+  collegeId Int
+  userId    Int?
+
+  college College @relation(fields: [collegeId], references: [id], onDelete: Cascade)
+  user    User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Cutoff {
+  id        Int    @id @default(autoincrement())
+  exam      String
+  collegeId Int
+  maxRank   Int
+
+  college College @relation("CollegeCutoffs", fields: [collegeId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id       Int    @id @default(autoincrement())
+  name     String
+  email    String @unique
+  password String
+  role     Role   @default(USER)
+
+  questions Question[]
+  answers   Answer[]
+  reviews   Review[]
+
+  createdAt DateTime @default(now())
+}
+
+enum Role {
+  ADMIN
+  USER
+}
+
+model Question {
+  id      Int    @id @default(autoincrement())
+  title   String
+  content String
+
+  userId Int
+  user   User @relation(fields: [userId], references: [id])
+
+  collegeId Int
+  college   College @relation(fields: [collegeId], references: [id])
+
+  answers Answer[]
+
+  createdAt DateTime @default(now())
+}
+
+model Answer {
+  id      Int    @id @default(autoincrement())
+  content String
+
+  questionId Int
+  question   Question @relation(fields: [questionId], references: [id])
+
+  userId Int
+  user   User @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+}
